@@ -2,14 +2,30 @@
   (:use [clojure.math.numeric-tower])
   (:use [clojure.tools.trace]))
 
+(defn arg-count [f]
+  (let [m (first (.getDeclaredMethods (class f)))
+        p (.getParameterTypes m)]
+    (alength p)))
+
 (defn derivative
-  "Return the derivative of a function of one variable."
+  "Returns the partial derivative of a function f with respect to its
+  ith parameter."
+  ([f] (derivative f 0))
+  ([f i]
+     (let [dx 0.0000001]
+       (fn [& vars]
+         (let [curr (nth vars i)
+               next (assoc (vec vars) i (+ curr dx))]
+           (/ (- (apply f next)
+                 (apply f vars))
+              dx))))))
+
+(defn partial-derivatives
+  "Return a seq of partial derivatives of a function of N variables
+  n0, n1, n2... where the kth element in the list is the partial
+  derivative of f with respect to nk."
   [f]
-  (let [dx 0.00000001]
-    (fn [x]
-      (/ (- (f (+ x dx))
-            (f x))
-         dx))))
+  (map (partial derivative f) (range (arg-count f))))
 
 (defn step
   "Given a cost function J of one variable, a current value theta, and
