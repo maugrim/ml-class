@@ -1,4 +1,5 @@
-(ns ml-class.gradient-descent)
+(ns ml-class.gradient-descent
+  (:use [ml-class.math]))
 
 (defn arg-count [f]
   (let [m (first (.getDeclaredMethods (class f)))
@@ -48,3 +49,11 @@
         (if (< (Math/abs (- curr-cost new-cost)) epsilon)
         new-theta
         (recur new-theta))))))
+
+(defn scale-fn
+  "Given some feature values, return an appropriate scaling function
+  to scale and mean-normalize the feature in question."
+  [& vals]
+  (let [mean (apply average vals)
+        range (- (apply max vals) (apply min vals))]
+    (fn [x] (/ (- x mean) range))))

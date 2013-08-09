@@ -1,16 +1,12 @@
 (ns ml-class.linear-regression
   (:use [clojure.tools.trace])
+  (:use [ml-class.math])
   (:require [ml-class.gradient-descent :as gd])
   (:require [ml-class.matrix :as m])
   (:require [ml-class.vector :as v]))
 
-(defn square [x] (* x x))
-
 (defn distance [values targets]
   (apply + (map #(square (- %1 %2)) values targets)))
-
-(defn average [& values]
-  (/ (apply + values) (count values)))
 
 (defn cost-fn
   "Given a set of training vectors and their targets, generates a cost
