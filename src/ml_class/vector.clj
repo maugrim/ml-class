@@ -1,5 +1,8 @@
 (ns ml-class.vector)
 
+(def vector clojure.core/vector)
+(def vector? clojure.core/vector?)
+
 (defn plus [& vs]
   (apply mapv + vs))
 

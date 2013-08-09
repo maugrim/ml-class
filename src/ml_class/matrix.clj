@@ -3,12 +3,18 @@
   (:require [ml-class.vector :as v]))
 
 (def trans (partial apply mapv vector))
+(def rows seq)
+(def cols trans)
 
 (defn row [matrix i]
-  (nth matrix i))
+  (nth (rows matrix) i))
 
 (defn col [matrix i]
-  (row (trans matrix) i))
+  (nth (cols matrix) i))
+
+(def matrix vector) ; a matrix is a Clojure vector of vectors
+(defn matrix? [x]
+  (and (v/vector? x) (every? v/vector? (rows x))))
 
 (defn plus [& matrices]
   (apply mapv v/plus matrices))
@@ -24,3 +30,10 @@
 
 (defn div [scalar m]
   (scalar-op m / scalar))
+
+(defn mmult [a b]
+  (mapv (fn [row]
+          (mapv (fn [col]
+                  (v/dot-product row col))
+                (cols b)))
+        (rows a)))
