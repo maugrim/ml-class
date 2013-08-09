@@ -1,5 +1,4 @@
-(ns ml-class.gradient-descent
-  (:use [clojure.tools.trace]))
+(ns ml-class.gradient-descent)
 
 (defn arg-count [f]
   (let [m (first (.getDeclaredMethods (class f)))
@@ -27,25 +26,25 @@
   (map (partial derivative f) (range (arg-count f))))
 
 (defn step
-  "Given a cost function J of one variable, a learning rate alpha,
+  "Given a cost function J taking some parameters, a learning rate alpha,
   and a vector of parameter values, take a single gradient descent step and
   return a new vector of parameter values."
-  [j alpha & vals]
+  [j alpha theta]
   (let [derivatives (partial-derivatives j)
         step-value (fn [djdx x]
-                     (- x (* alpha (apply djdx vals))))]
-    (map step-value derivatives vals)))
+                     (- x (* alpha (apply djdx theta))))]
+    (map step-value derivatives theta)))
 
 (defn descend
   "Perform iterated gradient descent, starting with a vector of
   initial values and stopping when successive steps result in a
   difference of no more than epsilon."
-  [j alpha epsilon & initial-vals]
+  [j alpha epsilon initial]
   (let [descend-step (partial step j alpha)]
-    (loop [curr-vals initial-vals]
-      (let [curr-cost (trace "curr-cost" (apply j curr-vals))
-            new-vals (trace "new-vals" (apply descend-step curr-vals))
-            new-cost (trace "new-cost" (apply j new-vals))]
+    (loop [curr-theta initial]
+      (let [curr-cost (trace "curr-cost" (apply j curr-theta))
+            new-theta (trace "new-vals" (descend-step curr-theta))
+            new-cost (trace "new-cost" (apply j new-theta))]
         (if (< (Math/abs (- curr-cost new-cost)) epsilon)
-        new-vals
-        (recur new-vals))))))
+        new-theta
+        (recur new-theta))))))
