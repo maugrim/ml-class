@@ -31,7 +31,16 @@
 (defn div [scalar m]
   (scalar-op m / scalar))
 
-(defn mmult [a b]
+(defn identity-matrix
+  "Generates an identity matrix of size n."
+  [n]
+  (letfn [(identity-row [i] (conj (repeat (dec i) 0) 1))
+          (row-generator [n] (partition n (dec n) (cycle (identity-row n))))]
+    (apply matrix (take n (map (partial apply v/vector) (row-generator n))))))
+
+(defn mmult
+  "Multiplies the matrices a and b."
+  [a b]
   (mapv (fn [row]
           (mapv (fn [col]
                   (v/dot-product row col))
