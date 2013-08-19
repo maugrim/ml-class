@@ -6,6 +6,14 @@
         p (.getParameterTypes m)]
     (alength p)))
 
+(defn scale-fn
+  "Given some feature values, return an appropriate scaling function
+  to scale and mean-normalize the feature in question."
+  [& vals]
+  (let [mean (apply average vals)
+        range (- (apply max vals) (apply min vals))]
+    (fn [x] (float (/ (- x mean) range)))))
+
 (defn derivative
   "Returns the partial derivative of a function f with respect to its
   ith parameter."
