@@ -13,7 +13,7 @@
   ([f i]
      (let [dx 0.0000001]
        (fn [& vals]
-         (let [curr (nth (vec (trace vals)) i)
+         (let [curr (nth (vec vals) i)
                next (assoc (vec vals) i (+ curr dx))]
            (/ (- (apply f next)
                  (apply f vals))
@@ -31,29 +31,12 @@
   and a vector of parameter values, take a single gradient descent step and
   return a new vector of parameter values."
   [j alpha theta]
-  (let [derivatives (partial-derivatives j)
-        step-value (fn [djdx x]
+  (let [step-value (fn [djdx x]
                      (- x (* alpha (apply djdx theta))))]
-    (map step-value derivatives theta)))
+    (map step-value (partial-derivatives j) theta)))
 
-(defn descend
+(defn run
   "Perform iterated gradient descent, starting with a vector of
-  initial values and stopping when successive steps result in a
-  difference of no more than epsilon."
-  [j alpha epsilon initial]
-  (let [descend-step (partial step j alpha)]
-    (loop [curr-theta initial]
-      (let [curr-cost (trace "curr-cost" (apply j curr-theta))
-            new-theta (trace "new-vals" (descend-step curr-theta))
-            new-cost (trace "new-cost" (apply j new-theta))]
-        (if (< (Math/abs (- curr-cost new-cost)) epsilon)
-        new-theta
-        (recur new-theta))))))
-
-(defn scale-fn
-  "Given some feature values, return an appropriate scaling function
-  to scale and mean-normalize the feature in question."
-  [& vals]
-  (let [mean (apply average vals)
-        range (- (apply max vals) (apply min vals))]
-    (fn [x] (/ (- x mean) range))))
+  initial values. Creates an infinite sequence of successive vectors."
+  [j alpha initial]
+  (iterate (partial step j alpha) initial))

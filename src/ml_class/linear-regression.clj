@@ -1,23 +1,27 @@
 (ns ml-class.linear-regression
-  (:use [clojure.tools.trace])
   (:use [ml-class.math])
-  (:require [ml-class.gradient-descent :as gd])
-  (:require [ml-class.matrix :as m])
-  (:require [ml-class.vector :as v]))
+  (:require [ml-class.gradient-descent :as gd]
+            [ml-class.matrix :as m]
+            [ml-class.vector :as v]))
 
-(defn distance [values targets]
-  (apply + (map #(square (- %1 %2)) values targets)))
+(defn distance [value target]
+  (square (- value target)))
+
+(defn distances [values targets]
+  (apply + (map distance values targets)))
+
+(def hypothesis v/dot-product)
 
 (defn cost-fn
   "Given a set of training vectors and their targets, generates a cost
-  function of a parameter vector theta which computes the average
-  distance to the targets when using that parameter vector."
+  function of a parameter vector theta which quantifies the error against
+  the targets when using that parameter vector."
   [features targets]
   (let [vectors (map #(cons 1 %) features)]
     (fn [& theta]
-      (/ 2 (average (map (partial v/dot-product theta) vectors))))))
+      (/ 2 (average (distances (map #(hypothesis theta %) vectors)))))))
 
 (defn linear-regression
   "Performs linear regression on the training set with the specified parameters."
-  [alpha epsilon initial training-vectors targets]
-  (gd/descend (cost-fn training-vectors targets) alpha epsilon initial))
+  [alpha initial training-vectors targets]
+  (gd/run (cost-fn training-vectors targets) alpha initial))

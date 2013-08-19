@@ -5,4 +5,5 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/math.combinatorics "0.0.4"]
-                 [org.clojure/tools.trace "0.7.5"]])
+                 [org.clojure/tools.trace "0.7.5"]
+                 [incanter "1.5.2"]])
