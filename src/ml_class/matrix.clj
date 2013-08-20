@@ -12,7 +12,7 @@
 (defn col [matrix i]
   (nth (cols matrix) i))
 
-(def matrix vector) ; a matrix is a Clojure vector of vectors
+(def matrix vec) ; a matrix is a Clojure vector of vectors
 (defn matrix? [x]
   (and (v/vector? x) (every? v/vector? (rows x))))
 
