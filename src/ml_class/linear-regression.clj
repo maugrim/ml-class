@@ -22,7 +22,14 @@
     (let [hypothesis (hypothesis-fn theta)]
       (/ (average (map distance (map hypothesis features) targets)) 2))))
 
-(defn linear-regression
+(defn run
   "Performs linear regression on the training set with the specified parameters."
-  [alpha initial training-vectors targets]
-  (gd/run (cost-fn training-vectors targets) alpha initial))
+  [training-vectors targets & {:keys [alpha initial n]
+                               :or {alpha 0.01 initial [1 1] n 500}}]
+  (let [j (cost-fn training-vectors targets)
+        results (take n (gd/run j alpha initial))]
+    {:iterations (vec results)
+     :hypotheses (map hypothesis-fn results)
+     :costs (map j results)
+     :theta (last results)
+     :j j}))
