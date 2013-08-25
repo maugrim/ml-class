@@ -1,5 +1,5 @@
 (ns ml-class.logistic-regression
-  (:use [ml-class.math])
+  (:use [ml-class.util])
   (:require [ml-class.gradient-descent :as gd]
             [ml-class.matrix :as m]
             [ml-class.vector :as v]))
@@ -23,7 +23,7 @@
   the targets when using that parameter vector."
   [features targets]
   (let [vectors (map #(cons 1 %) features)]
-    (fn [& theta]
+    (fn [theta]
       (average (distances (map #(hypothesis theta %) vectors) targets)))))
 
 (defn logistic-regression

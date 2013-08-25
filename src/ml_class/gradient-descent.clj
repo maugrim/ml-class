@@ -1,10 +1,5 @@
 (ns ml-class.gradient-descent
-  (:use [ml-class.math]))
-
-(defn arg-count [f]
-  (let [m (first (.getDeclaredMethods (class f)))
-        p (.getParameterTypes m)]
-    (alength p)))
+  (:use [ml-class.util]))
 
 (defn scale-fn
   "Given some feature values, return an appropriate scaling function
@@ -15,33 +10,31 @@
     (fn [x] (float (/ (- x mean) range)))))
 
 (defn derivative
-  "Returns the partial derivative of a function f with respect to its
-  ith parameter."
+  "Returns the partial derivative of a function f which takes a
+  vector [x0, x1...xn] with respect to its ith parameter."
   ([f] (derivative f 0))
   ([f i]
      (let [dx 0.0000001]
-       (fn [& vals]
-         (let [curr (nth (vec vals) i)
-               next (assoc (vec vals) i (+ curr dx))]
-           (/ (- (apply f next)
-                 (apply f vals))
-              dx))))))
+       (fn [vals]
+         (let [curr (nth vals i)
+               next (assoc vals i (+ curr dx))]
+           (/ (- (f next) (f vals)) dx))))))
 
 (defn partial-derivatives
-  "Return a seq of partial derivatives of a function of N variables
-  n0, n1, n2... where the kth element in the list is the partial
-  derivative of f with respect to nk."
-  [f]
-  (map (partial derivative f) (range (arg-count f))))
+  "Return a seq of partial derivatives of a function f which takes
+  a vector [x0, x1...xn] where the ith element in the list is the
+  partial derivative of f with respect to xi."
+  [f n]
+  (map (partial derivative f) (range n)))
 
 (defn step
-  "Given a cost function J taking some parameters, a learning rate alpha,
+  "Given a cost function J taking a parameter vector, a learning rate alpha,
   and a vector of parameter values, take a single gradient descent step and
   return a new vector of parameter values."
   [j alpha theta]
   (let [step-value (fn [djdx x]
-                     (- x (* alpha (apply djdx theta))))]
-    (map step-value (partial-derivatives j) theta)))
+                     (- x (* alpha (djdx theta))))]
+    (mapv step-value (partial-derivatives j (count theta)) theta)))
 
 (defn run
   "Perform iterated gradient descent, starting with a vector of
