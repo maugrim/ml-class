@@ -5,7 +5,15 @@
 (defn square [x] (* x x))
 
 (defn average [values]
-  (/ (apply + values) (count values)))
+  (float (/ (reduce + values) (count values))))
+
+(defn distance [value target]
+  (square (- value target)))
+
+(defn sd [values]
+  (let [mean (average values)
+	distances (map (partial distance mean) values)]
+    (Math/sqrt (average distances))))
 
 (defn pad [seq value]
   "Extends a sequence with an infinite stream of padding values."
@@ -26,4 +34,4 @@
    N-1 is treated as a target value."
   (let [values (read-csv path :types (repeat read-string))]
     {:targets (mapv last values)
-     :features (map (comp vec butlast) values)}))
+     :features (mapv (comp vec butlast) values)}))

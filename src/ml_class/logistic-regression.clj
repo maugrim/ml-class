@@ -4,18 +4,19 @@
             [ml-class.matrix :as m]
             [ml-class.vector :as v]))
 
-(defn distance
+(defn penalty
   "Cost(x, y) = -y log x - (1-y) log x"
   [value target]
   (- (- (* target (Math/log value))) (* (- 1 target) (Math/log value))))
 
-(defn distances [values targets]
-  (reduce + (map distance values targets)))
-
 (defn logistic [z]
   (/ 1 (+ 1 (Math/exp (- z)))))
 
-(def hypothesis (comp logistic v/dot-product))
+(defn hypothesis-fn
+  "Returns a hypothesis function for a vector x, given a parameter vector theta."
+  [theta]
+  (fn [x]
+    (logistic (v/dot-product (vec (cons 1 x)) theta))))
 
 (defn cost-fn
   "Given a set of training vectors and their targets, generates a cost
@@ -24,7 +25,7 @@
   [features targets]
   (let [vectors (map #(cons 1 %) features)]
     (fn [theta]
-      (average (distances (map #(hypothesis theta %) vectors) targets)))))
+      (average (map penalty (map (hypothesis-fn theta) vectors) targets)))))
 
 (defn logistic-regression
   "Performs logistic regression on the training set with the specified parameters."

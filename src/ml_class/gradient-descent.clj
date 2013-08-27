@@ -4,7 +4,7 @@
 (defn scale-fn
   "Given some feature values, return an appropriate scaling function
   to scale and mean-normalize the feature in question."
-  [& vals]
+  [vals]
   (let [mean (apply average vals)
         range (- (apply max vals) (apply min vals))]
     (fn [x] (float (/ (- x mean) range)))))

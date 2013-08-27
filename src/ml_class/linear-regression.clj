@@ -4,9 +4,6 @@
             [ml-class.matrix :as m]
             [ml-class.vector :as v]))
 
-(defn distance [value target]
-  (square (- value target)))
-
 (defn hypothesis-fn
   "Returns a hypothesis function for a vector x, given a parameter vector theta."
   [theta]
